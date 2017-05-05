@@ -2,6 +2,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 
@@ -18,8 +19,12 @@ module Web.MailChimp.List
   ( ListApi
   , ListClient (..)
   , ListId
+  , List (..)
   )
   where
+
+-- aeson
+import Data.Aeson.Types
 
 -- base
 import GHC.Generics
@@ -37,6 +42,9 @@ import Servant.API
 import Servant.Client
 import Servant.Client.Generic
 
+-- text
+import Data.Text (Text)
+
 
 -- |
 --
@@ -45,13 +53,54 @@ import Servant.Client.Generic
 type ListId =
   Id
 
+type Contact = Object
+type CampaignDefaults = Object
+type Statistics = Object
+
+
+data List =
+  List
+    { listId                  :: ListId
+    , listWebId               :: Int
+    , listName                :: Text
+    , listContact             :: Contact
+    , listPermissionReminder  :: Text
+    , listUseArchiveBar       :: Bool
+    , listCampaignDefaults    :: CampaignDefaults
+    , listNotifyOnSubscribe   :: Text
+    , listNotifyOnUnsubscribe :: Text
+    , listDateCreated         :: Text
+    , listListRating          :: Int
+    , listEmailTypeOption     :: Bool
+    , listSubscribeUrlShort   :: Text
+    , listSubscribeUrlLong    :: Text
+    , listBeamerAddress       :: Text
+    , listVisibility          :: Text
+    , listModules             :: [Text]
+    , listStats               :: Statistics
+    } deriving (Show, GHC.Generics.Generic)
+
+
+instance FromJSON List where
+  parseJSON =
+    genericParseJSON defaultOptions
+      { fieldLabelModifier     = camelTo2 '_' . drop 4
+      , constructorTagModifier = camelTo2 '_'
+      }
+
+
+instance FromJSON (ListResponse List) where
+  parseJSON =
+    listResponseFromJSON "lists"
 
 -- |
 --
 --
 
 type ListApi =
-    Get '[JSON] [String]
+     QueryParam "count" Int
+  :> QueryParam "offset" Int
+  :> Get '[JSON] (ListResponse List)
 
 
 -- |
@@ -64,7 +113,10 @@ data ListClient =
       --
       --
 
-      getLists :: ClientM [String]
+      getLists
+        :: Maybe Int
+        -> Maybe Int
+        -> ClientM (ListResponse List)
 
     }
   deriving (GHC.Generics.Generic)
