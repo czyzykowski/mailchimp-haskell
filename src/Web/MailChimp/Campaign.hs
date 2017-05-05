@@ -11,6 +11,7 @@ module Web.MailChimp.Campaign
   , CampaignClient (..)
   , CampaignId
   , Campaign (..)
+  , CampaignDeliveryStatus
   ) where
 
 
@@ -44,14 +45,14 @@ import Data.Text (Text)
 type CampaignId = Id
 
 
-type CampaignSettings = Value
-type List = Value
-type ABTestOptions = Value
-type CampaignTrackingOptions = Value
-type RSSOptions = Value
-type CampaignSocialCard = Value
-type CampaignReportSummary = Value
-type CampaignDeliveryStatus = Value
+type CampaignSettings        = Object
+type List                    = Object
+type ABTestOptions           = Object
+type CampaignTrackingOptions = Object
+type RSSOptions              = Object
+type CampaignSocialCard      = Object
+type CampaignReportSummary   = Object
+type CampaignDeliveryStatus  = Object
 
 
 -- |
@@ -99,7 +100,8 @@ instance FromJSON Campaign where
 --
 
 instance FromJSON (ListResponse Campaign) where
-  parseJSON = listResponseFromJSON "campaigns"
+  parseJSON =
+    listResponseFromJSON "campaigns"
 
 
 -- |

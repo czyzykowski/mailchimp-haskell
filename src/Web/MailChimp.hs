@@ -53,6 +53,7 @@ import Web.MailChimp.Key as X
 import Web.MailChimp.List as X
 import Web.MailChimp.List.Member as X
 import Web.MailChimp.Campaign as X
+import Web.MailChimp.Report as X
 
 -- servant
 import Servant.API
@@ -128,6 +129,9 @@ type AuthApi =
   :<|>
     "campaigns"
       :> CampaignApi
+  :<|>
+    "reports"
+      :> ReportApi
 
 
 -- |
@@ -165,6 +169,13 @@ data AuthClient =
     , makeCampaignClient
         :: CampaignClient
 
+      -- |
+      --
+      -- Create a client for campaigns report
+
+    , makeReportClient
+        :: ReportClient
+
     }
   deriving (GHC.Generics.Generic)
 
@@ -180,7 +191,8 @@ instance Generics.SOP.Generic AuthClient
 --
 --
 
-instance (Client AuthApi ~ client) => ClientLike client AuthClient
+instance (Client AuthApi ~ client) => ClientLike client AuthClient where
+  mkClient = genericMkClientP
 
 
 -- |
