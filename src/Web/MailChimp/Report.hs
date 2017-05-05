@@ -10,6 +10,7 @@ module Web.MailChimp.Report
   ( ReportApi
   , ReportClient (..)
   , Report (..)
+  , ClickDetail (..)
   ) where
 
 -- aeson
@@ -95,6 +96,7 @@ instance FromJSON Report where
       , constructorTagModifier = camelTo2 '_'
       }
 
+
 -- |
 --
 --
@@ -102,6 +104,49 @@ instance FromJSON Report where
 instance FromJSON (ListResponse Report) where
   parseJSON =
     listResponseFromJSON "reports"
+
+
+type ABSplit = Object
+type LinkId = Id
+
+
+-- |
+--
+--
+
+data ClickDetail =
+  ClickDetail
+    { clickDetailId                    :: LinkId
+    , clickDetailURL                   :: Text
+    , clickDetailTotalClicks           :: Int
+    , clickDetailClickPercentage       :: Double
+    , clickDetailUniqueClicks          :: Int
+    , clickDetailUniqueClickPercentage :: Double
+    , clickDetailLastClick             :: Text
+    , clickDetailABSplit               :: Maybe ABSplit
+    , clickDetailCampaignId            :: CampaignId
+    } deriving (Show, GHC.Generics.Generic)
+
+
+-- |
+--
+--
+
+instance FromJSON ClickDetail where
+  parseJSON =
+    genericParseJSON defaultOptions
+      { fieldLabelModifier     = camelTo2 '_' . drop 11
+      , constructorTagModifier = camelTo2 '_'
+      }
+
+
+-- |
+--
+--
+
+instance FromJSON (ListResponse ClickDetail) where
+  parseJSON =
+    listResponseFromJSON "urls_clicked"
 
 -- |
 --
@@ -122,6 +167,11 @@ type ReportApi =
   :<|>
     Capture "campaign_id" CampaignId
       :> Get '[JSON] Report
+
+  :<|>
+    Capture "campaign_id" CampaignId
+      :> "click-details"
+      :> GetObjectList ClickDetail
 
 -- |
 --
@@ -145,6 +195,16 @@ data ReportClient =
     ,  getReport
         :: CampaignId
         -> ClientM Report
+
+      -- |
+      --
+      -- Get detailed information about links clicked in campaigns.
+
+    , getReportClickDetails
+        :: CampaignId
+        -> Maybe Int
+        -> Maybe Int
+        -> ClientM (ListResponse ClickDetail)
 
     }
   deriving (GHC.Generics.Generic)
