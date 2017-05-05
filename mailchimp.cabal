@@ -37,6 +37,7 @@ library
       Web.MailChimp.Extra
       Web.MailChimp.Key
       Web.MailChimp.List
+      Web.MailChimp.Campaign
       Web.MailChimp.List.Member
       Web.MailChimp.Tutorial
   other-modules:

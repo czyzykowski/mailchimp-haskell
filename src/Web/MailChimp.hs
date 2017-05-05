@@ -52,6 +52,7 @@ import Web.MailChimp.Extra as X
 import Web.MailChimp.Key as X
 import Web.MailChimp.List as X
 import Web.MailChimp.List.Member as X
+import Web.MailChimp.Campaign as X
 
 -- servant
 import Servant.API
@@ -124,6 +125,9 @@ type AuthApi =
       :> Capture "list_id" ListId
       :> "members"
       :> ListMemberApi
+  :<|>
+    "campaigns"
+      :> CampaignApi
 
 
 -- |
@@ -153,6 +157,13 @@ data AuthClient =
     , makeListMemberClient
         :: ListId
         -> ListMemberClient
+
+      -- |
+      --
+      -- Create a client for campaigns
+
+    , makeCampaignClient
+        :: CampaignClient
 
     }
   deriving (GHC.Generics.Generic)
