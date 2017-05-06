@@ -106,6 +106,15 @@ instance FromJSON (ListResponse Report) where
     listResponseFromJSON "reports"
 
 
+-- |
+--
+--
+
+instance ToJSON Report where
+  toJSON = prefixToJSON "report"
+
+
+
 type ABSplit = Object
 type LinkId = Id
 
@@ -139,6 +148,14 @@ instance FromJSON ClickDetail where
       , constructorTagModifier = camelTo2 '_'
       }
 
+-- |
+--
+--
+
+instance ToJSON ClickDetail where
+  toJSON =
+    prefixToJSON "clickDetail"
+
 
 -- |
 --
@@ -147,6 +164,7 @@ instance FromJSON ClickDetail where
 instance FromJSON (ListResponse ClickDetail) where
   parseJSON =
     listResponseFromJSON "urls_clicked"
+
 
 -- |
 --

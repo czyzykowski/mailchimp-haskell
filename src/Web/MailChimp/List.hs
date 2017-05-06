@@ -80,18 +80,32 @@ data List =
     , listStats               :: Statistics
     } deriving (Show, GHC.Generics.Generic)
 
+-- |
+--
+--
 
 instance FromJSON List where
   parseJSON =
     genericParseJSON defaultOptions
-      { fieldLabelModifier     = camelTo2 '_' . drop 4
+      { fieldLabelModifier     = camelTo2 '_' . drop (length ("list" :: String))
       , constructorTagModifier = camelTo2 '_'
       }
 
+-- |
+--
+--
 
 instance FromJSON (ListResponse List) where
   parseJSON =
     listResponseFromJSON "lists"
+
+-- |
+--
+--
+
+instance ToJSON List where
+  toJSON =
+    prefixToJSON "list"
 
 -- |
 --

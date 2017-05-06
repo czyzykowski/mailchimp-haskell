@@ -107,6 +107,14 @@ instance FromJSON (ListResponse Campaign) where
 -- |
 --
 --
+instance ToJSON Campaign where
+  toJSON =
+    prefixToJSON "campaign"
+
+
+-- |
+--
+--
 
 type CampaignApi =
      QueryParam "count" Int

@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE FlexibleContexts #-}
 ----------------------------------------------------------------------
 -- |
 -- Module: Web.MailChimp.Common
@@ -12,6 +13,7 @@ module Web.MailChimp.Common
   ( Id
   , ListResponse (..)
   , listResponseFromJSON
+  , prefixToJSON
   )
   where
 
@@ -19,6 +21,9 @@ module Web.MailChimp.Common
 import Data.Aeson
 import Data.Aeson.Types
 import qualified Data.Aeson as Aeson
+
+-- base
+import GHC.Generics
 
 -- text
 import Data.Text (Text)
@@ -53,3 +58,13 @@ listResponseFromJSON itemsLabel =
         <$> o .: itemsLabel
         <*> o .: "total_items"
 
+
+-- |
+--
+--
+prefixToJSON :: (Generic a, GToJSON Zero (Rep a)) => String -> a -> Value
+prefixToJSON prefix =
+  genericToJSON defaultOptions
+    { fieldLabelModifier     = camelTo2 '_' . drop (length prefix)
+    , constructorTagModifier = camelTo2 '_'
+    }
